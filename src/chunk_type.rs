@@ -15,7 +15,7 @@ impl FromStr for ChunkType {
 impl TryFrom for ChunkType {
     type Error;
 
-    fn try_from(value: [u8; 4]) -> Result(Self, Self::Error) {
+    fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
         Ok(ChunkType {
             code: std::str::from_utf8(value),
         })
