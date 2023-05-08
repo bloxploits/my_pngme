@@ -1,21 +1,23 @@
-struct ChunkType {
-    code: &str,
+use std::str::FromStr;
+use std::convert::TryFrom;
+
+pub type Error = Box<dyn std::error::Error>;
+pub struct ChunkType {
+    code: String,
 }
 
 impl FromStr for ChunkType {
-    type Err;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
-
-        Ok()
+    fn from_str(s: &str) -> Result<Self, Error> {
+        if s.is_ascii() {
+            Ok(ChunkType {code: String::from(s)})
+        } else {
+            return Err("Not ascii!")?;
+        }
     }
 }
 
 impl TryFrom for ChunkType {
-    type Error;
-
-    fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
+    fn try_from(value: [u8; 4]) -> Result<Self, Error> {
         Ok(ChunkType {
             code: std::str::from_utf8(value),
         })
