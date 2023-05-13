@@ -46,7 +46,7 @@ impl ChunkType {
     }
 
     fn is_valid(&self) -> bool {
-        
+        todo!()
     }
 
     fn is_critical(&self) -> bool {
