@@ -14,12 +14,11 @@ impl str::FromStr for ChunkType {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.is_ascii() && s.len() == 4 {
-            True => {
-                let bytes: [u8; 4] = s.as_bytes().try_into().unwrap();
-                Ok(ChunkType {code: bytes})
-            },    
-            _ => Err("Chunk type doesn't follow valid PNG conventions!")
+        if s.is_ascii() && s.len() == 4 && s.chars().all(char::is_alphabetic) {
+            let bytes: [u8; 4] = s.as_bytes().try_into().unwrap();
+            Ok(ChunkType {code: bytes})
+        } else {
+            Err("Not a valid PNG chunk!")
         }
     }
 }
@@ -46,23 +45,23 @@ impl ChunkType {
     }
 
     fn is_valid(&self) -> bool {
-        todo!()
+        (self.code[2] as char).is_ascii_uppercase()
     }
 
     fn is_critical(&self) -> bool {
-        todo!()
+        (self.code[0] as char).is_ascii_uppercase()
     }
 
     fn is_public(&self) -> bool {
-        todo!()
+        (self.code[1] as char).is_ascii_uppercase()
     }
 
     fn is_reserved_bit_valid(&self) -> bool {
-        todo!()
+        (self.code[2] as char).is_ascii_uppercase()
     }
 
     fn is_safe_to_copy(&self) -> bool {
-        todo!()
+        (self.code[3] as char).is_ascii_lowercase()
     }
 }
 
@@ -147,7 +146,7 @@ mod tests {
         assert!(!chunk.is_valid());
 
         let chunk = ChunkType::from_str("Ru1t");
-        assert!(chunk.is_err());
+        assert!(chunk.is_err()); // The assertion fails here, must not return an error type?
     }
 
     #[test]
