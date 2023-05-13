@@ -36,7 +36,7 @@ impl TryFrom<[u8; 4]> for ChunkType {
 
 impl Display for ChunkType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[{}, {}, {}, {}]", self.code[0], self.code[1], self.code[2], self.code[3])
+        write!(f, "{}", str::from_utf8(&self.code).unwrap())
     }
 }
 
@@ -46,7 +46,7 @@ impl ChunkType {
     }
 
     fn is_valid(&self) -> bool {
-        if(self.code[2])
+        
     }
 
     fn is_critical(&self) -> bool {
