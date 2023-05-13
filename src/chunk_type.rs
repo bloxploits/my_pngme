@@ -1,32 +1,48 @@
-use std::str::FromStr;
+use std::str;
 use std::convert::TryFrom;
+use std::fmt::Display;
+use std::fmt::Formatter;
 
 pub type Error = Box<dyn std::error::Error>;
+
+#[derive(PartialEq, Eq, Debug)]
 pub struct ChunkType {
-    code: String,
+    code: [u8; 4],
 }
 
-impl FromStr for ChunkType {
-    fn from_str(s: &str) -> Result<Self, Error> {
-        if s.is_ascii() {
-            Ok(ChunkType {code: String::from(s)})
-        } else {
-            return Err("Not ascii!")?;
+impl str::FromStr for ChunkType {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.is_ascii() && s.len() == 4 {
+            True => {
+                let bytes: [u8; 4] = s.as_bytes().try_into().unwrap();
+                Ok(ChunkType {code: bytes})
+            },    
+            _ => Err("Chunk type doesn't follow valid PNG conventions!")
         }
     }
 }
 
-impl TryFrom for ChunkType {
+impl TryFrom<[u8; 4]> for ChunkType {
+    type Error = Box<dyn std::error::Error>;
+
     fn try_from(value: [u8; 4]) -> Result<Self, Error> {
         Ok(ChunkType {
-            code: std::str::from_utf8(value),
+            code: value,
         })
+    }
+}
+
+impl Display for ChunkType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}, {}, {}, {}]", self.code[0], self.code[1], self.code[2], self.code[3])
     }
 }
 
 impl ChunkType {
     fn bytes(&self) -> [u8; 4] {
-        self.code.as_bytes()
+        self.code
     }
 
     fn is_valid(&self) -> bool {
