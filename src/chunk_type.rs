@@ -146,7 +146,7 @@ mod tests {
         assert!(!chunk.is_valid());
 
         let chunk = ChunkType::from_str("Ru1t");
-        assert!(chunk.is_err()); // The assertion fails here, must not return an error type?
+        assert!(chunk.is_err());
     }
 
     #[test]
