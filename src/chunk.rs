@@ -1,4 +1,4 @@
-use crate::chunk_type::ChunkType;
+use crate::chunk_type::{ChunkType, self};
 use crc;
 
 pub type Error = Box<dyn std::error::Error>;
@@ -54,7 +54,23 @@ impl TryFrom<&[u8]> for Chunk {
         // Need to consider: validating chunk type
         // Need to iterate through the bytes
         // Check to see order of bytes from PNG spec
-        todo!()
+        let data_length: [u8; 4] = value.get(0..4).ok_or("No length found.")?.try_into().unwrap();
+        let data_length = u32::from_be_bytes(length);
+
+        let chunk_type: [u8;4] = value.get(4..8).ok_or("No chunk type found.")?.try_into().unwrap();
+        let chunk_type = ChunkType::try_from(chunk_type).unwrap();
+
+        // ^^ CHECK IF ABOVE SLICING NUMBERS ARE CORRECT, i.e. IS 0..4 AND 4..8 CORRECT?
+
+        if !chunk_type.is_valid() {
+            Err("The chunk type is not valid!")
+        } else {
+            ()
+        }
+
+        let total_length = value.len();
+        //slice from the end until the start of crc, and do similar thing for the chunk data
+
     }
 }
 
